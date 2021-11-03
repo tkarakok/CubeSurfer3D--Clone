@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Trap : MonoBehaviour
 {
-  
+    public int unit;
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Dead")

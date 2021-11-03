@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LevelController : MonoBehaviour
@@ -12,10 +13,10 @@ public class LevelController : MonoBehaviour
     public Slider levelProgressBar;
     int _currentLevel,_score;
     float _maxDistance;
-    public Text startCoinText, finishCoinText, gameOverCoinText,scoreText,finishScoreText;
+    public Text startCoinText, finishCoinText, gameOverCoinText,scoreText,finishScoreText,bonusText;
     public Text currentLevelText, nextLevelText;
     
-
+    
     private void Start()
     {
         Current = this;
@@ -46,11 +47,23 @@ public class LevelController : MonoBehaviour
         gameActive = true;
     }
 
-    public void FinishGame()
+    public void RestartGame()
     {
+        LevelLoader.Current.ChangeLevel(SceneManager.GetActiveScene().name);
+    }
+
+    public void LoadNextLevel()
+    {
+        LevelLoader.Current.ChangeLevel("Level " + (_currentLevel + 1)) ;
+    }
+
+    public void FinishGame(int bonus)
+    {
+        _score *= bonus;
         GiveMoneyToPlayer(_score);
         PlayerController.Current.animator.SetBool("win",true);
         PlayerController.Current.animator.SetBool("run",false);
+        bonusText.text = bonus.ToString();
         finishScoreText.text = _score.ToString();
         gameMenu.SetActive(false);
         finishMenu.SetActive(true);

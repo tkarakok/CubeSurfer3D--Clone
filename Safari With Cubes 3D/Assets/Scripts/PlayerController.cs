@@ -15,6 +15,9 @@ public class PlayerController : MonoBehaviour
     public List<AddingCube> cubes;
     public GameObject cubePrefab;
     public Animator animator;
+    
+    
+    
 
     void Update()
     {
@@ -50,23 +53,44 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "AddCube")
+        if (other.CompareTag("AddCube"))
         {
             int _unit = other.gameObject.GetComponent<CubeCount>().unit;
             for (int i = 0; i < _unit; i++)
             {
                 CreateCube(true);
             }
+
             Destroy(other.gameObject);
         }
-        else if (other.tag == "Trap")
+        else if (other.CompareTag("Trap"))
         {
             other.tag = "Untagged";
-            CreateCube(false);
+            int _unit = other.gameObject.GetComponent<Trap>().unit;
+            for (int i = 0; i < _unit; i++)
+            {
+                CreateCube(false);
+            }
         }
-        else if (other.tag == "Finish")
+        
+
+    }
+
+   
+    
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Finish"))
         {
-            LevelController.Current.FinishGame();
+            if (cubes.Count > 0)
+            {
+                return;
+            }
+            else
+            {
+                LevelController.Current.FinishGame(collision.gameObject.GetComponent<FinishBonus>().bonus);
+            }
         }
     }
 
@@ -85,20 +109,24 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            cubes[cubes.Count - 1].AddCube(false);
+            cubes[cubes.Count - 1].DestroyCube();
         }
     }
 
 
     public void DestroyCube(AddingCube addingCube)
     {
-        cubes.Remove(addingCube);
-        Destroy(addingCube.gameObject);
-    }
 
+        cubes.Remove(addingCube);
+        addingCube.transform.SetParent(null);
+
+
+    }
 
     public void Die()
     {
         LevelController.Current.GameOver();
     }
+   
+
 }
